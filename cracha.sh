@@ -3,12 +3,12 @@
 ###################################################
 #    GERADOR DE CRACHÁ EM SHELL SCRIPT - YAD      #
 #    Desenvolvedor: Walderlan Sena                #
-#    Organização: iYoung Codes                    #
+#    Site: https://www.mentesvirtuaissena.com     #
 ###################################################
 
 # Formulario inicial de cadatro de crachás
 FOR=$(
-  yad --title="Gerador de Crachá v-0.0.1"         \
+  yad --title="Gerador de Crachá v-0.1.1"               \
       --center                                          \
       --width=600                                       \
       --height=300                                      \
@@ -20,7 +20,7 @@ FOR=$(
       --field="Email:" ""                               \
       --field="Nivel:":CB Administrador!Cliente!Técnico \
       --field="Cargo:" ""                               \
-      --field="Foto :":FL "$HOME/Pictures"             \
+      --field="Foto :":FL "$HOME/Pictures"              \
       --field="Salvar dados em:":DIR "$HOME"            \
 
 ) # end formulario
@@ -30,9 +30,17 @@ FOR=$(
 nome=$(echo  "$FOR" | cut -d "|" -f 1)
 email=$(echo "$FOR" | cut -d "|" -f 2)
 nivel=$(echo "$FOR" | cut -d "|" -f 3)
+foto=$(echo "$FOR" | cut -d "|" -f 5)
 cargo=$(echo "$FOR" | cut -d "|" -f 4)
-foto=$(echo  "$FOR" | cut -d "|" -f 5)
 salve=$(echo "$FOR" | cut -d "|" -f 6)
+
+# Verificação se há uma foto
+if [ -e $foto ];then
+  clear
+else
+  foto=img/semfoto.png
+fi
+# end Verificação da foto
 
 # end captura
 # Criando arquivo HTML com os dados passados
@@ -71,49 +79,72 @@ DADOS="
         font-weight: bold;
         text-decoration: none;
       }
+      .nomes h2{
+        margin-bottom: -20px;
+      }
+      .nomes h4{
+        margin-bottom: -20px;
+        font-family: verdana;
+      }
+      p{
+        font-size: 10pt;
+      }
+      #imprimir{
+        display: block;
+        margin: 0 auto;
+        margin-top: -10px;
+        width: 150px;
+        text-align: center;
+        border-radius: 0px 0px 10px 10px;
+      }
     </style>
   </head>
   <body>
+    <a href='javascript:window.print();' title='Imprimir Crachá'' id='imprimir'>Imprimir crachá</a>
+    <br>
+    <br>
     <table class='tabela' border='1'>
       <tr>
         <td>
           <img src='$foto' width='320' height='330' alt='foto não encontrada'>
         </td>
         <tr class='descricao'>
-          <td>
+          <td class='nomes'>
             <h2>$nome</h2>
             <h4>$cargo</h4>
+            <h6>$nivel</h6>
+            <p>$email</p>
           </td>
         </tr>
       </tr>
     </table>
-    <br>
-    <br>
-    <br>
-    <a href='javascript:window.print();'>Imprimir</a>
   </body>
 </html>"
 
-if [ $nome != "" ]; then
+if [ -z $nome || -z $cargo ];then
+# Notificação de erro para gerar crachá
+#clear # Limpando a tela do terminal
+yad --title="Desculpe, ocorreu um erro !"       \
+    --center                                    \
+    --width=350                                 \
+    --height=100                                \
+    --fixed                                     \
+    --text="Não foi possivel gerar o crachá"    \
+    --text-align=center                         \
+    --button=Fechar
+else
   # Enviado dados para um arquivo HTML
-  echo $DADOS > cracha-"$nome".html
-
+  echo $DADOS > Cracha-"$nome".html
   # Notificação de sucesso para gerar crachá
+  clear # Limpando a tela do terminal
   yad --title="Parabéns, Crachá Gerado !"            \
       --center                                       \
+      --width=350                                    \
+      --height=100                                   \
       --fixed                                        \
+      --text-align=center                            \
+      --button=Fechar                                \
       --text="Crachá do(a) $nome gerado com sucesso" |
-
-      firefox cracha-"$nome".html
-else
-    # Notificação de erro para gerar crachá
-    clear
-    yad --title="Desculpe, ocorreu um erro !"       \
-        --center                                    \
-        --width=350                                 \
-        --height=100                                \
-        --fixed                                     \
-        --text="Não foi possivel gerar um crachá"   \
-        --text-align=center                         \
-        --button=Fechar
-fi
+      # Abre navegador firefox com o arquivo(crachá) gerado
+      firefox Cracha-"$nome".html
+fi # end if
