@@ -3,5 +3,5 @@ Gerador de Crachás em Shell Script - com interface Yad
 
 # Funcionamento do Software
 
-![image](https://www.mentesvirtuaissena.com/img/Cracha.gif)
+![image](https://github.com/WalderlanSena/crachaemshell/blob/master/img/Cracha.gif)
 
